@@ -14,7 +14,7 @@ namespace kennards.gomoku.api
     public static class Game
     {
         [FunctionName("CreateGame")]
-        public static async Task<IActionResult>  Create(
+        public static IActionResult  Create(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "gomoku/v1/create")] HttpRequest req,
             ILogger log)
         {
@@ -37,7 +37,7 @@ namespace kennards.gomoku.api
             }
         }
         [FunctionName("GameMove")]
-        public static async Task<IActionResult> Move(
+        public static IActionResult Move(
           [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "gomoku/v1/move")] HttpRequest req,
           ILogger log)
         {

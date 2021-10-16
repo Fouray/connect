@@ -3,50 +3,7 @@ using System.Collections.Generic;
 
 namespace kennards.generic.classes
 {
-    public class GameStyle
-    {
-        public int Size { get; set; } = 15;
-        public string Pattern { get; set; } = "xxxxx";
-        public string Name { get; set; }
-
-        public GameStyle(string name, int boardSize, string pattern)
-        {
-            Size = boardSize;
-            Pattern = pattern;
-            Name = name;
-        }
-
-    }
-
-    public static class GameStyles
-    {
-        static List<GameStyle> Styles { get; set; } = new List<GameStyle>();
-        static GameStyles()
-        {
-
-            //The following could be sourced from any form of configuration based data store
-            Styles.Add(new GameStyle("Standard", 15, "XXXXX"));
-            Styles.Add(new GameStyle("Alternate", 20, "X.X.X.X.X"));
-
-        }
-        public static GameStyle Get(string name)
-        {
-            if (Styles.Count < 1)
-            {
-                throw new InvalidOperationException("Contructor for GameStyles Failed to run");
-            }
-            if (String.IsNullOrEmpty(name))
-            {
-                name = "standard";
-            }
-            GameStyle game = Styles.Find(f => f.Name.Equals(name,StringComparison.OrdinalIgnoreCase));
-            if(game == null)
-            {
-                throw new ArgumentException($"{name} Style is not defined as a known game.");
-            }
-            return game;
-        }
-    }
+   
     [Serializable]
     public class Gomoku
     {
@@ -56,14 +13,12 @@ namespace kennards.generic.classes
 
         public Intersection CurrentMove { get; set; }
 
-        public BoardResult State { get; set; }
 
         public Gomoku()
         {
             CurrentGame = new Board();
             CurrentPlayers = new Players();
             CurrentMove = new Intersection();
-            State = BoardResult.inital;
         }
         public Gomoku(Board game, Player p1, Player p2, Intersection move, BoardResult state=BoardResult.inital)
         {
@@ -89,7 +44,7 @@ namespace kennards.generic.classes
                 {
                    CurrentGame.State= BoardResult.invalidPlayer;
                 }
-                if (CurrentGame.Move(CurrentMove))
+                else if (CurrentGame.Move(CurrentMove))
                 {
                     CurrentMove = new Intersection();
                 }

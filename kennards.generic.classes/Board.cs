@@ -20,38 +20,19 @@ namespace kennards.generic.classes
         invlaidMoveOutofBounds,
         invalidMoveGameOver,
         invalidPlayer,
-        invalidNoMove,
 
         Succesfull = inital | resultVictory | resultDraw | moveSuccessful,
-        UnSuccessful = invalidMoveOutOfTurn | invalidMoveOccupied | invlaidMoveOutofBounds | invalidMoveGameOver | invalidPlayer | invalidNoMove,
+        UnSuccessful = invalidMoveOutOfTurn | invalidMoveOccupied | invlaidMoveOutofBounds | invalidMoveGameOver | invalidPlayer ,
         Over = invalidMoveGameOver | resultDraw | resultVictory
 
     }
-    public class Intersection
-    {
-        public Player OccupiedBy { get; set; } = null;
-        public int Row { get; set; }
-        public int Column { get; set; }
-        public Intersection()
-        {
-            OccupiedBy = new Player();
-            Row = -1;
-            Column = -1;
-        }
-
-        public Intersection(Player P, int R, int C)
-        {
-            OccupiedBy = P;
-            Row = R;
-            Column = C;
-        }
-    }
+    
 
     public class Board
     {
         public List<Intersection> Current { get; set; } = new List<Intersection>();
         public BoardResult State { get; set; } = BoardResult.inital;
-        public GameStyle Style { get; set; } = GameStyles.Get(null);
+        public GameStyle Style { get; set; } 
         public Board(GameStyle style)
         {
             Style = style;
@@ -82,11 +63,7 @@ namespace kennards.generic.classes
             {
                 lastMove = Current[Current.Count - 1];
             }
-            if (move == null || String.IsNullOrEmpty(move.OccupiedBy.Name))
-            {
-                State = BoardResult.invalidNoMove;
-            }
-            else if (State == BoardResult.Over)
+            if (State == BoardResult.Over)
             {
                 State = BoardResult.invalidMoveGameOver;
             }
@@ -107,6 +84,7 @@ namespace kennards.generic.classes
             {
 
                 Current.Add(move);
+
                 FindResult();
 
             }
@@ -119,8 +97,8 @@ namespace kennards.generic.classes
             State = BoardResult.moveSuccessful;
 
             //get length of pattern
-            var currentPatternLength = Style.Pattern.Split("X").Length;
-            var oponentPatternLength = Style.Pattern.Split(".").Length;
+            var currentPatternLength = Style.Pattern.Split("X").Length-1;
+            var oponentPatternLength = Style.Pattern.Split(".").Length-1;
 
             Intersection lastMove = null;
             if (Current.Count > 0)
@@ -132,41 +110,16 @@ namespace kennards.generic.classes
             if (lastMove != null)
             {
                 //Check play has played enough tiles to meet pattern length
-                if (Current.FindAll(f => f.OccupiedBy.Name == lastMove.OccupiedBy.Name).Count < (currentPatternLength) &&
+                if (Current.FindAll(f => f.OccupiedBy.Name == lastMove.OccupiedBy.Name).Count >= (currentPatternLength) &&
                      //If pattern includes openents tiles then ensure enough moves to includes
                      Current.Count >= currentPatternLength + oponentPatternLength)
                 {
                     //only need to check the last tile has won the game 
                     if (lastMove != null)
                     {
-                        //get pattern string of horizontal 
-                        string testString = BuildPattern(lastMove.OccupiedBy.Name, lastMove.Column, lastMove.Row, currentPatternLength + oponentPatternLength);
-                        if (testString.IndexOf(Style.Pattern) >= 0)
-                        {
-                            State = BoardResult.resultVictory;
-                            return;
-                        }
-                        testString = BuildPattern(lastMove.OccupiedBy.Name, lastMove.Row, lastMove.Column, currentPatternLength + oponentPatternLength);
-                        if (testString.IndexOf(Style.Pattern) >= 0)
-                        {
-                            State = BoardResult.resultVictory;
-                            return;
-                        }
-                        testString = BuildDiagonalPattern(lastMove.OccupiedBy.Name, lastMove.Row, lastMove.Column, currentPatternLength + oponentPatternLength);
-                        if (testString.IndexOf(Style.Pattern) >= 0)
-                        {
-                            State = BoardResult.resultVictory;
-                            return;
-                        }
-                        testString = BuildDiagonalPattern(lastMove.OccupiedBy.Name, lastMove.Row - (currentPatternLength + oponentPatternLength), lastMove.Column - (currentPatternLength + oponentPatternLength), currentPatternLength + oponentPatternLength, false) ;
-                        if (testString.IndexOf(Style.Pattern) >= 0)
-                        {
-                            State = BoardResult.resultVictory;
-                            return;
-                        }
-
-                        //check if all points are full
-                        if (Current.Count == Math.Pow(Style.Size, 2))
+                        State = CheckWin(lastMove);
+                        
+                        if (State != BoardResult.resultVictory && Current.Count == Math.Pow(Style.Size, 2))
                         {
                             State = BoardResult.resultDraw;
                             return;
@@ -176,70 +129,86 @@ namespace kennards.generic.classes
             }
         }
 
-        private string BuildPattern(string name, int r, int c, int length)
+        private BoardResult CheckWin(Intersection lastMove)
         {
-            string result = "";
-            for (var i = r - length; i <= r + length; i++)
+            BoardResult result = BoardResult.moveSuccessful;
+            string horizontal = new string(' ', Style.Size);
+            string vertical = new string(' ', Style.Size);
+            string northWest = new string(' ', Style.Size);
+            string northEast = new string(' ', Style.Size);
+            for (var i = 0; i <= Style.Size; i++)
             {
                 if (i >= 0 && i < Style.Size)
                 {
-                    Intersection tile = Current.Find(f => f.Column == i && f.Row == c);
-                    if (tile != null)
+                    //build up horizontal string of X and . for the  row dependent on the player
+                    Intersection row = Current.Find(f => f.Column == i && f.Row == lastMove.Row);
+                    if (row != null)
                     {
-                        if (name == tile.OccupiedBy.Name)
+                        if (lastMove.OccupiedBy.Name == row.OccupiedBy.Name)
                         {
-                            result += "X";
+                            horizontal=horizontal.Remove(i, 1).Insert(i, "X");
                         }
                         else
                         {
-                            result += ".";
+                            horizontal=horizontal.Remove(i, 1).Insert(i, "."); ;
                         }
                     }
-                    else
+                    //build up horizontal string of X and . for the  row dependent on the player
+                    Intersection col = Current.Find(f => f.Column == lastMove.Column && f.Row == i);
+                    if (col != null)
                     {
-                        result += " ";
-                    }
-                }
-            }
-            return result;
-        }
-        private string BuildDiagonalPattern(string name, int r, int c, int length,bool forward =true)
-        {
-            string result = ""; 
-            
-            var newR = (r - length);
-            var newC = (c - length);
-            if (!forward)
-            {
-                 newR = (r + length);
-                 newC = (c + length);
-            }
-            for (var i2=0; i2 <= (length*2);i2++)
-            {
-                var i = i2;
-                if (!forward)
-                {
-                    i = ((length * 2) - 1) - i2;
-                }
-                 r += i;
-                 c += i;
-                if (r >= 0 && r < Style.Size && c >= 0 && c < Style.Size)
-                {
-                    Intersection tile = Current.Find(f => f.Column == c && f.Row == r);
-                    if (tile != null)
-                    {
-                        if (name == tile.OccupiedBy.Name)
+                        if (lastMove.OccupiedBy.Name == col.OccupiedBy.Name)
                         {
-                            result += "X";
+                            vertical=vertical.Remove(i, 1).Insert(i, "X");
                         }
                         else
                         {
-                            result += ".";
+                            vertical.Remove(i, 1).Insert(i, "."); ;
                         }
                     }
-                    else
+
+                    //Find  the north east pointing diagonal
+                    int diffToFirst = Math.Min(lastMove.Row, lastMove.Column);
+                    var startRow = lastMove.Row - diffToFirst;
+                    var startCol = lastMove.Column - diffToFirst;
+                    Intersection ne = Current.Find(f => f.Column == startCol+i && f.Row == startRow-i);
+                    if (ne != null)
                     {
-                        result += " ";
+                        if (lastMove.OccupiedBy.Name == ne.OccupiedBy.Name)
+                        {
+                            northEast=northEast.Remove(i, 1).Insert(i, "X");
+                        }
+                        else
+                        {
+                            northEast=northEast.Remove(i, 1).Insert(i, "."); ;
+                        }
+                    } 
+                    
+                    //Find  the north west pointing diagonal
+
+                     diffToFirst = Math.Min(lastMove.Row, lastMove.Column);
+                    if (diffToFirst < Style.Size) {//at far end no diagonal
+                        startRow = Math.Min(Style.Size-1,lastMove.Row + diffToFirst);
+                        startCol = lastMove.Column - diffToFirst;
+                        Intersection nw = Current.Find(f => f.Column == startCol - i && f.Row == startRow +i);
+                        if (nw != null)
+                        {
+                            if (lastMove.OccupiedBy.Name == nw.OccupiedBy.Name)
+                            {
+                                northWest=northWest.Remove(i, 1).Insert(i, "X");
+                            }
+                            else
+                            {
+                                northWest= northWest.Remove(i, 1).Insert(i, "."); ;
+                            }
+                        }
+                    }
+                    if(horizontal.IndexOf(Style.Pattern)>=0 ||
+                        vertical.IndexOf(Style.Pattern) >= 0 ||
+                        northEast.IndexOf(Style.Pattern) >= 0 || 
+                        northWest.IndexOf(Style.Pattern) >=0)
+                    {
+                        return BoardResult.resultVictory;
                     }
                 }
             }
