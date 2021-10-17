@@ -10,18 +10,32 @@ using Microsoft.Extensions.Primitives;
 
 namespace kennard.gomoku.xUnit
 {
+    /// <summary>
+    /// Testing using xUnit
+    /// <remark>
+    /// I had never used xUnit prior to this mainly concentrating on nUNIT.
+    /// I found the Fact and Theory styles enjoyable
+    /// </remark>
+    /// <remark>
+    /// Most things have been tested here via the API calling a with a HTTP get request.
+    /// The Use of a Tick-Tack-Toe game was used in some testing to reduce the need of building up games with 225 intersections to test completed games
+    /// The tick-tack-toe is identical to Gomoku except it uses a smaller board and has a smaller success pattern.
+    /// </remark>
+    /// </summary>
     public class GomokuTests
     {
+        //Mock logger
         private readonly ILogger logger = TestFactory.CreateLogger();
 
 
-
+        //Theory to check creation of various games and fails when expected.
         [Theory]
         [InlineData("Create Standard Game with Two Unique Players", "standard", "p1", "p2", true)]
         [InlineData("Fail To Create Game with non Unique players", "standard", "p1", "p1", false)]
         [InlineData("Create a standard game with no arguments passed", "standard", null, null, true)]
         [InlineData("Fail to Create and unknown game style", "NonStandard", null, null, false)]
-        [InlineData("Create Alternate game", "Alternate", null, null, true)]
+        [InlineData("Create Leemoku game", "Leemoku", null, null, true)]
+        [InlineData("Create Tick-Tack-Toe game", "TicTackToe", null, null, true)]
         public  void Create(string description, string gameStyle, string p1, string p2, bool expectedResult)
         {
             Dictionary<string, StringValues> paramaters = new Dictionary<string, StringValues>();
@@ -39,6 +53,30 @@ namespace kennard.gomoku.xUnit
             }
             Assert.True((game != null) == expectedResult, description);
         }
+
+        /// <summary>
+        /// Build up the test data for the Move tests.
+        /// </summary>
+        /// <returns>object[]
+        ///     <list type="bullet">
+        ///         <item>
+        ///             <term>
+        ///                 Current Game <see cref="String">Gomoku JSON</see>
+        ///             </term>
+        ///             <description>
+        ///                 A Gomoku Object in current play as a Json String
+        ///             </description>
+        ///         </item> 
+        ///         <item>
+        ///             <term>
+        ///                 Expected Result <see cref="BoardResult">BoardResult</see>
+        ///             </term>
+        ///             <description>
+        ///                 What the expected result for the current game is
+        ///             </description>
+        ///         </item> 
+        ///     </list>
+        /// </returns>
         public static IEnumerable<object[]> GetGameData()
         {
 
@@ -53,7 +91,7 @@ namespace kennard.gomoku.xUnit
                      BoardResult.moveSuccessful
                     }; 
 
-            //Test an uppoer bound out of bounds move 
+            //Test an upper bound out of bounds move 
             yield return
             new object[] {
                     "{\"currentGame\":{\"current\":[{\"occupiedBy\":{\"name\":\"No Name 0\"},\"row\":0,\"column\":0}]," +
@@ -86,7 +124,7 @@ namespace kennard.gomoku.xUnit
                      BoardResult.invalidMoveOutOfTurn
                     };
 
-            //test invlaid Move with already occupied intersection
+            //test invalid Move with already occupied intersection
             yield return
             new object[] {
                     "{\"currentGame\":{\"current\":[{\"occupiedBy\":{\"name\":\"No Name 0\"},\"row\":0,\"column\":0}]," +
@@ -97,7 +135,7 @@ namespace kennard.gomoku.xUnit
                      BoardResult.invalidMoveOccupied
                     };
 
-            //test move by invlaid player
+            //test move by invalid player
             yield return
             new object[] {
                     "{\"currentGame\":{\"current\":[{\"occupiedBy\":{\"name\":\"No Name 0\"},\"row\":0,\"column\":0}]," +
@@ -138,7 +176,7 @@ namespace kennard.gomoku.xUnit
                      BoardResult.resultVictory
                     };
 
-            //test vistory ticktacktoe
+            //test victory ticktacktoe
             yield return
            new object[] {
                     "{\"currentGame\":{\"current\":[{\"occupiedBy\":{\"name\":\"No Name 0\"},\"row\":0,\"column\":0}," +
@@ -176,6 +214,11 @@ namespace kennard.gomoku.xUnit
                   };
         }
 
+        /// <summary>
+        /// The theory test of move utilising the data from <see cref="GetGameData">GetGameData</see>
+        /// </summary>
+        /// <param name="game" type="string">A json string of a current Gomoku</param>
+        /// <param name="expectedResult" type="BoardResult">The expected result</param>
         [Theory]
         [MemberData(nameof(GetGameData))]
         
@@ -195,7 +238,7 @@ namespace kennard.gomoku.xUnit
             }
             else
             {
-                Assert.True(false, "Game returned unepected erorr ");
+                Assert.True(false, "Game returned unexpected error ");
             }
 
         }
