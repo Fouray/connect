@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31321.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kennards.gomoku.api", "kennards.gomoku.api.csproj", "{8C1E9C6C-C443-4E72-87C2-D78208D8457F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kennards.generic.classes", "..\kennards.generic.classes\kennards.generic.classes.csproj", "{D2C45123-0C4F-4B2D-BDEC-F91793E5EAB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kennard.gomoku.xUnit", "..\kennard.gomoku.xUnit\kennard.gomoku.xUnit.csproj", "{D7309D45-1BCF-4382-9077-1163B76D2B02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C1E9C6C-C443-4E72-87C2-D78208D8457F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C1E9C6C-C443-4E72-87C2-D78208D8457F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C1E9C6C-C443-4E72-87C2-D78208D8457F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C1E9C6C-C443-4E72-87C2-D78208D8457F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2C45123-0C4F-4B2D-BDEC-F91793E5EAB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2C45123-0C4F-4B2D-BDEC-F91793E5EAB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2C45123-0C4F-4B2D-BDEC-F91793E5EAB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2C45123-0C4F-4B2D-BDEC-F91793E5EAB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7309D45-1BCF-4382-9077-1163B76D2B02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7309D45-1BCF-4382-9077-1163B76D2B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7309D45-1BCF-4382-9077-1163B76D2B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7309D45-1BCF-4382-9077-1163B76D2B02}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9903D98-4EB0-4E86-98ED-F99C18450360}
+	EndGlobalSection
+EndGlobal
